@@ -1,5 +1,5 @@
 import os
-import datetime
+from datetime import datetime
 import shutil
 
 class fileManager():
@@ -27,69 +27,46 @@ class fileManager():
         if self.fileList.__len__() != 0:
             return self.fileList
             
-
     def create_folder(self, rootPath: str, folderName: str) -> None:
         if self.isPathValid(rootPath):
-            os.mkdir(os.path.join(rootPath, folderName))
             print(f"Created folder: {folderName} in {rootPath}")
+            os.mkdir(os.path.join(rootPath, folderName))
 
-    def get_file_by_index(self, index: int) -> str:
-        if index < self.fileList.__len__():
-            self.file = self.fileList[index]
-            return self.file
-        raise Exception(f"Index out of range")
-        
-    def move_RAF_file(self, fileName: str, folderName: str):
-        if self.isPathValid(self.path) == False:
-            return "Path does not exist"
-        
-        if fileName.endswith(".RAF"):
-            shutil.move(self.path, os.path.join(self.destination, folderName, fileName))
-            print(f"Moved: {fileName} to {folderName}")
-        return
-    
-    def retrieve_file_metadata(self):
-        fileStats = os.stat(self.path)
+    def retrieve_file_metadata(self, path: str):
+        fileStats = os.stat(path)
 
         metadata = {
-            'Name': self.file,
-            'Size (MB)': self.sizeFormat(fileStats.st_size),
-            'Date Created': self.timeConvert(fileStats.st_ctime), 
-            'Date Modified': self.timeConvert(fileStats.st_mtime),
+            'Size_MB': self.sizeFormat(fileStats.st_size),
+            'Date_created': self.timeConvert(fileStats.st_ctime),
+            'Date_modified': self.timeConvert(fileStats.st_mtime),
         }
 
         return metadata
 
     def timeConvert(self, atime: datetime):
-        newtime = datetime.datetime.fromtimestamp(atime)
+        newtime = datetime.fromtimestamp(atime)
         return newtime.strftime('%m-%d-%Y')
     
     def sizeFormat(self, size):
         newform = format(size/1024, ".2f")
         return newform + " KB"
 
-    def move_files_by_date_range(self, targetDate: str, dest_path: str) -> None:
-        try: 
-            targetDate = datetime.datetime.strptime(targetDate, '%m-%d-%Y')
-        except ValueError:
-            print("Incorrect date format, should be MM-DD-YYYY")
-        
-        file_count = 0
-        for file in os.listdir(self.path):
-            print(file)
-            if(file.endswith(".RAF") == False):
-                continue
-            fileStats = os.stat(file)
-            fileDate = self.timeConvert(fileStats.st_ctime)
-            if fileDate >= targetDate:
-                file_count += 1
-                self.move_RAF_file(file, dest_path)
-                print(f"Moved: {file})")
-            if FileNotFoundError:
-                continue
-            if(file_count == 0):
-                print("No files found in date range")
-        print(f"Total files moved: {file_count}")
+    def count_files(self, file: str, fileType: str):
+        if file.endswith(fileType):
+            count += 1
+        return count
+    
+    def copy_files_with_date(self, targetDate: str, folderName: str, fileType: str):
+        # return files with given date
+        for f in os.listdir(self.path):
+            if f.endswith(fileType):
+                self.filePath = os.path.join(self.path, f)
+                fileStats = self.retrieve_file_metadata(self.filePath)
+                file_date = datetime.strptime(fileStats['Date_created'], '%m-%d-%Y')
+                target_date = datetime.strptime(targetDate, '%m-%d-%Y')
+                if file_date == target_date:
+                    shutil.copy2(self.filePath, os.path.join(self.path, folderName))
+                    print(f'Copied {f} -> {self.path}')   
 
     def organize_file_by_date():
         return
