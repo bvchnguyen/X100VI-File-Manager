@@ -9,6 +9,7 @@ class fileManager():
         self.file: str
         self.fileList: list
         self.destination: str
+        self.moveCount: int = 0
 
     def isPathValid(self, pathName: str) -> bool:
         return os.path.exists(pathName)
@@ -40,7 +41,6 @@ class fileManager():
             'Date_created': self.timeConvert(fileStats.st_ctime),
             'Date_modified': self.timeConvert(fileStats.st_mtime),
         }
-
         return metadata
 
     def timeConvert(self, atime: datetime):
@@ -50,14 +50,8 @@ class fileManager():
     def sizeFormat(self, size):
         newform = format(size/1024, ".2f")
         return newform + " KB"
-
-    def count_files(self, file: str, fileType: str):
-        if file.endswith(fileType):
-            count += 1
-        return count
     
     def copy_files_with_date(self, targetDate: str, folderName: str, fileType: str):
-        # return files with given date
         for f in os.listdir(self.path):
             if f.endswith(fileType):
                 self.filePath = os.path.join(self.path, f)
@@ -65,17 +59,9 @@ class fileManager():
                 file_date = datetime.strptime(fileStats['Date_created'], '%m-%d-%Y')
                 target_date = datetime.strptime(targetDate, '%m-%d-%Y')
                 if file_date == target_date:
+                    self.moveCount += 1
                     shutil.copy2(self.filePath, os.path.join(self.path, folderName))
-                    print(f'Copied {f} -> {self.path}')   
-
-    def organize_file_by_date():
-        return
-
-    def sort_file_by_type():
-        return
-
-    def format_sd_card():
-        return
-
-    def file_destination():
-        return
+                    print(f'{self.moveCount}. Copied {f} -> {self.path}/{folderName}')   
+    
+    def move_dir_to_dest(self, folderName: str):
+        shutil.move(os.path.join(self.path, folderName), self.destination)
