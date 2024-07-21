@@ -15,9 +15,10 @@ def main():
         sys.exit(1)
 
     targetDate = input("Enter the date of the files to move (MM-DD-YYYY): ")
+    eventName = input("Enter the name of the folder: ")
     
-    raf_folder = 'test_raf'
-    jpg_folder = 'test_jpg'
+    raf_folder = f'{eventName}_raf'
+    jpg_folder = f'{eventName}_jpg'
 
     fm.create_folder(fm.path, raf_folder)
     fm.create_folder(fm.path, jpg_folder)
@@ -26,8 +27,8 @@ def main():
 
     print(f"Total files copied and moved: {fm.moveCount}")
 
-    fm.move_dir_to_dest(raf_folder)
-    fm.move_dir_to_dest(jpg_folder)
+    # fm.move_dir_to_dest(raf_folder)
+    # fm.move_dir_to_dest(jpg_folder)
 
 if __name__ == "__main__":
     main()
